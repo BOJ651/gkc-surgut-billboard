@@ -1,0 +1,16 @@
+# Django и основные пакеты
+Django>=5.0
+djangorestframework>=3.15
+djangorestframework-simplejwt>=5.3
+django-cors-headers>=4.3
+django-debug-toolbar>=4.3
+django-extensions>=3.2
+django-filter>=24.2
+psycopg[binary]>=3.1.0
+celery>=5.3
+redis>=5.0
+python-dotenv>=1.0
+python-json-logger>=2.0
+Pillow>=11.3.0
+gunicorn>=22.0
+whitenoise>=6.6

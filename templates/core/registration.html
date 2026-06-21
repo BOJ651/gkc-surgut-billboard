@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Регистрация - {{ event.title }} - ГКЦ Сургут{% endblock %}
+
+{% block content %}
+<section class="registration-page">
+    <div class="container">
+        <div class="registration-header">
+            <h1>Регистрация на мероприятие</h1>
+            <p>{{ event.title }}</p>
+        </div>
+
+        <div class="registration-form-wrapper">
+            <div class="event-info-card">
+                <h3>Информация о мероприятии</h3>
+                <ul class="event-info-list">
+                    <li><strong>Дата:</strong> {{ event.date|date:"d.m.Y H:i" }}</li>
+                    <li><strong>Место:</strong> {{ event.location }}</li>
+                    <li><strong>Стоимость:</strong> 
+                        {% if event.is_free %}
+                            Бесплатно
+                        {% else %}
+                            {{ event.price }} ₽
+                        {% endif %}
+                    </li>
+                    <li><strong>Доступно мест:</strong> {{ event.available_spots }}</li>
+                </ul>
+            </div>
+
+            <form method="post" class="registration-form">
+                {% csrf_token %}
+                <h2>Ваши данные</h2>
+                
+                <div class="form-group">
+                    <label for="{{ form.full_name.id_for_label }}">ФИО *</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                        <div class="form-errors">{{ form.full_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email *</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="form-errors">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.phone.id_for_label }}">Телефон *</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="form-errors">{{ form.phone.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.spots.id_for_label }}">Количество мест *</label>
+                    {{ form.spots }}
+                    <small>Максимум: {{ event.available_spots|default:10 }}</small>
+                    {% if form.spots.errors %}
+                        <div class="form-errors">{{ form.spots.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.comment.id_for_label }}">Комментарий</label>
+                    {{ form.comment }}
+                    {% if form.comment.errors %}
+                        <div class="form-errors">{{ form.comment.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">Зарегистрироваться</button>
+                    <a href="{% url 'core:event_detail' event.pk %}" class="btn btn-secondary">Отмена</a>
+                </div>
+
+                <p class="form-note">* Обязательные поля для заполнения</p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

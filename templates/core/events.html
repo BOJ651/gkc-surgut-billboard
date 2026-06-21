@@ -1,0 +1,106 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Афиша мероприятий - ГКЦ Сургут{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Афиша мероприятий</h1>
+        <p class="page-subtitle">Выберите мероприятие по душе</p>
+    </div>
+</section>
+
+<section class="events-page">
+    <div class="container">
+        <div class="filters">
+            <form method="get" class="filters-form">
+                <div class="filter-group">
+                    <label for="category">Категория:</label>
+                    <select name="category" id="category" class="form-control">
+                        <option value="">Все категории</option>
+                        <option value="concert" {% if request.GET.category == 'concert' %}selected{% endif %}>Концерты</option>
+                        <option value="theater" {% if request.GET.category == 'theater' %}selected{% endif %}>Театр</option>
+                        <option value="workshop" {% if request.GET.category == 'workshop' %}selected{% endif %}>Мастер-классы</option>
+                        <option value="exhibition" {% if request.GET.category == 'exhibition' %}selected{% endif %}>Выставки</option>
+                        <option value="festival" {% if request.GET.category == 'festival' %}selected{% endif %}>Фестивали</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="date_from">Дата от:</label>
+                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="filter-group">
+                    <label for="date_to">Дата до:</label>
+                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Применить</button>
+                <a href="{% url 'core:events' %}" class="btn btn-secondary">Сбросить</a>
+            </form>
+        </div>
+
+        <div class="events-list">
+            {% for event in events %}
+            <div class="event-card-horizontal">
+                {% if event.image %}
+                <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-card-image">
+                {% else %}
+                <div class="event-card-image-placeholder">Нет фото</div>
+                {% endif %}
+                <div class="event-card-body">
+                    <span class="event-card-category">{{ event.get_category_display }}</span>
+                    <h3 class="event-card-title">{{ event.title }}</h3>
+                    <p class="event-card-description">{{ event.description|truncatewords:30 }}</p>
+                    <div class="event-card-meta">
+                        <span>📅 {{ event.date|date:"d.m.Y H:i" }}</span>
+                        <span>📍 {{ event.location }}</span>
+                        <span>
+                            {% if event.is_free %}
+                                Бесплатно
+                            {% else %}
+                                {{ event.price }} ₽
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="event-card-actions">
+                        <a href="{% url 'core:event_detail' event.pk %}" class="btn btn-primary">Подробнее</a>
+                        <span class="available-spots">
+                            {% if event.available_spots == 0 %}
+                                Мест нет
+                            {% else %}
+                                Доступно мест: {{ event.available_spots }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-results">
+                <p>Мероприятия не найдены</p>
+                <a href="{% url 'core:events' %}" class="btn btn-secondary">Сбросить фильтры</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-sm">&laquo; Первая</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-sm">‹ Назад</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-sm">Вперёд ›</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-sm">Последняя &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

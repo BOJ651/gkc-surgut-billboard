@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }} - ГКЦ Сургут{% endblock %}
+
+{% block content %}
+<section class="event-detail">
+    <div class="container">
+        <div class="event-detail-header">
+            {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-detail-image">
+            {% else %}
+            <div class="event-detail-image-placeholder">Нет изображения</div>
+            {% endif %}
+        </div>
+
+        <div class="event-detail-content">
+            <span class="event-detail-category">{{ event.get_category_display }}</span>
+            <h1 class="event-detail-title">{{ event.title }}</h1>
+            
+            <div class="event-detail-meta">
+                <div class="meta-item">
+                    <span class="meta-icon">📅</span>
+                    <div>
+                        <strong>Дата и время</strong>
+                        <p>{{ event.date|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">📍</span>
+                    <div>
+                        <strong>Место проведения</strong>
+                        <p>{{ event.location }}</p>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">💰</span>
+                    <div>
+                        <strong>Стоимость</strong>
+                        <p>
+                            {% if event.is_free %}
+                                Бесплатно
+                            {% else %}
+                                {{ event.price }} ₽
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">🎟️</span>
+                    <div>
+                        <strong>Доступно мест</strong>
+                        <p>
+                            {% if event.available_spots == 0 %}
+                                Мест нет
+                            {% else %}
+                                {{ event.available_spots }} из {{ event.max_capacity }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-detail-description">
+                <h2>О мероприятии</h2>
+                <p>{{ event.description|linebreaks }}</p>
+            </div>
+
+            <div class="event-detail-actions">
+                {% if event.available_spots > 0 and event.status == 'published' %}
+                    <a href="{% url 'core:registration' event.pk %}" class="btn btn-primary btn-lg">Зарегистрироваться</a>
+                {% else %}
+                    <button class="btn btn-disabled btn-lg" disabled>Регистрация закрыта</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

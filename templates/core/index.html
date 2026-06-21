@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Главная - ГКЦ Сургут{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Добро пожаловать в Городской культурный центр</h1>
+            <p class="hero-subtitle">Концерты, выставки, мастер-классы и многое другое</p>
+            <a href="{% url 'core:events' %}" class="btn btn-primary">Смотреть афишу</a>
+        </div>
+    </div>
+</section>
+
+<section class="upcoming-events">
+    <div class="container">
+        <h2 class="section-title">Ближайшие мероприятия</h2>
+        <div class="events-grid">
+            {% for event in upcoming_events %}
+            <div class="event-card">
+                {% if event.image %}
+                <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
+                {% else %}
+                <div class="event-image-placeholder">Нет изображения</div>
+                {% endif %}
+                <div class="event-content">
+                    <span class="event-category">{{ event.get_category_display }}</span>
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <div class="event-info">
+                        <span class="event-date">📅 {{ event.date|date:"d.m.Y H:i" }}</span>
+                        <span class="event-location">📍 {{ event.location }}</span>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-price">
+                            {% if event.is_free %}
+                                Бесплатно
+                            {% else %}
+                                {{ event.price }} ₽
+                            {% endif %}
+                        </span>
+                        <a href="{% url 'core:event_detail' event.pk %}" class="btn btn-sm">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-events">Пока нет запланированных мероприятий</p>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'core:events' %}" class="btn btn-secondary">Все мероприятия</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
